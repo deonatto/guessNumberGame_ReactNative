@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { View, TextInput, StyleSheet, Alert } from "react-native";
-import PrimaryButton from "../components/PrimatyButton";
+import PrimaryButton from "../components/UI/PrimatyButton";
+import Colors from "../constants/color";
 
-const StartGameScreen = ({onPickNumber}) => {
+const StartGameScreen = ({ onPickNumber }) => {
   const [enteredNumber, setEnteredNumber] = useState("");
 
   const inputHandler = (enteredText) => {
     setEnteredNumber(enteredText);
   };
 
-  const resetInputHandler = () =>{
-    setEnteredNumber('')
-  }
+  const resetInputHandler = () => {
+    setEnteredNumber("");
+  };
 
   const confirmInputHnadler = () => {
     const chosenNumber = parseInt(enteredNumber);
@@ -19,9 +20,9 @@ const StartGameScreen = ({onPickNumber}) => {
       Alert.alert(
         "Invalid number!",
         "Number has to be a number between 1 and 99",
-        [{ text: 'Ok', style: 'destructive', onPress: resetInputHandler}]
+        [{ text: "Ok", style: "destructive", onPress: resetInputHandler }]
       );
-      return
+      return;
     }
     onPickNumber(enteredNumber);
   };
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     borderRadius: 8,
     elevation: 8,
-    backgroundColor: "#3b021f",
+    backgroundColor: Colors.primary800,
     shadowColor: "black",
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
@@ -68,9 +69,9 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     fontSize: 32,
-    borderBottomColor: "#ddb52f",
+    borderBottomColor: Colors.accent500,
     borderBottomWidth: 2,
-    color: "#ddb52f",
+    color: Colors.accent500,
     marginVertical: 8,
     fontWeight: "bold",
     textAlign: "center",
