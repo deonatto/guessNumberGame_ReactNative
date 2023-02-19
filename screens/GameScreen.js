@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, FlatList, Text } from "react-native";
 import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/UI/PrimatyButton";
 import Title from "../components/UI/Title";
-
+import Card from "../components/UI/Card";
+import IntructionText from "../components/UI/IntructionText";
+import LogItem from "../components/game/LogItem";
+import { Ionicons } from "@expo/vector-icons";
 
 let minBoundary = 1;
 let maxBoundary = 100;
@@ -18,18 +21,21 @@ const generateRandomNumber = (min, max, exclude) => {
   }
 };
 
-const GameScreen = ({ userNumber, onGameOver}) => {
+const GameScreen = ({ userNumber, onGameOver }) => {
   const initialGuess = generateRandomNumber(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessRounds, setGuessRounds] = useState([initialGuess]);
 
   //check if game is over every time user changes guessed value
-  useEffect(()=>{
-    if(currentGuess === Number(userNumber)){
-      onGameOver();
+  useEffect(() => {
+    if (currentGuess === Number(userNumber)) {
+      onGameOver(guessRounds.length);
+      minBoundary = 1;
+      maxBoundary = 100;
     }
   }, [currentGuess, userNumber, onGameOver]);
 
-  const checkIfUserisLying = (direction) =>{
+  const checkIfUserisLying = (direction) => {
     if (
       (direction === "lower" && currentGuess < userNumber) ||
       (direction === "greater" && currentGuess > userNumber)
@@ -39,11 +45,11 @@ const GameScreen = ({ userNumber, onGameOver}) => {
       ]);
       return true;
     }
-  }
+  };
   const nextGuessHandler = (direction) => {
     const isLying = checkIfUserisLying(direction);
-    if(isLying){
-      return
+    if (isLying) {
+      return;
     }
     if (direction === "lower") {
       maxBoundary = currentGuess;
@@ -56,22 +62,36 @@ const GameScreen = ({ userNumber, onGameOver}) => {
       currentGuess
     );
     setCurrentGuess(newRndNumber);
+    setGuessRounds((prevState) => [newRndNumber, ...prevState]);
   };
 
   return (
     <View style={styles.screen}>
       <Title> Opponent's Guess </Title>
       <NumberContainer>{currentGuess}</NumberContainer>
-      <View>
-        <Text>Higher or lower ?</Text>
-        <View>
-          <PrimaryButton onPress={() => nextGuessHandler("lower")}>
-            -
-          </PrimaryButton>
-          <PrimaryButton onPress={() => nextGuessHandler("greater")}>
-            +
-          </PrimaryButton>
+      <Card>
+        <IntructionText text="Higher or lower?" />
+        <View style={styles.buttonsContainer}>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={() => nextGuessHandler("lower")}>
+              <Ionicons name="md-remove" size={24} />
+            </PrimaryButton>
+          </View>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={() => nextGuessHandler("greater")}>
+              <Ionicons name="md-add" size={24} />
+            </PrimaryButton>
+          </View>
         </View>
+      </Card>
+      <View style = {styles.flatListContainer}>
+        <FlatList
+          data={guessRounds}
+          renderItem={(itemData) => (
+            <LogItem round={guessRounds.length - itemData.index} guess={itemData.item}/>
+          )}
+          keyExtractor={(item) => item}
+        />
       </View>
     </View>
   );
@@ -85,4 +105,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 35,
   },
+  buttonsContainer: {
+    flexDirection: "row",
+  },
+  buttonContainer: {
+    flex: 1,
+  },
+  flatListContainer: {
+    flex: 1,
+    padding: 16
+  }
 });
