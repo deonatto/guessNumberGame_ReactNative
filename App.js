@@ -5,6 +5,7 @@ import GameScreen from "./screens/GameScreen";
 import Colors from "./constants/color";
 import { useState } from "react";
 import GameOverScren from "./screens/GameOverScreen";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState();
@@ -20,16 +21,20 @@ export default function App() {
     setRounds(rounds);
   };
 
-  const startNewGameHandler = () =>{
+  const startNewGameHandler = () => {
     setUserNumber(null);
     setGameIsOver(false);
     setRounds(0);
-  }
+  };
 
   const screensHandler = () => {
     return userNumber ? (
       gameIsOver ? (
-        <GameOverScren userNumber={userNumber} rounds={rounds} onStartNewGame={startNewGameHandler}/>
+        <GameOverScren
+          userNumber={userNumber}
+          rounds={rounds}
+          onStartNewGame={startNewGameHandler}
+        />
       ) : (
         <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
       )
@@ -38,21 +43,24 @@ export default function App() {
     );
   };
   return (
-    <LinearGradient
-      colors={[Colors.primary700, Colors.accent500]}
-      style={styles.rootScreen}
-    >
-      <ImageBackground
-        source={require("./assets/images/background.png")}
-        resizeMode="cover"
+    <React.Fragment>
+      <StatusBar style="light" />
+      <LinearGradient
+        colors={[Colors.primary700, Colors.accent500]}
         style={styles.rootScreen}
-        imageStyle={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.rootScreen}>
-          {screensHandler()}
-        </SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+        <ImageBackground
+          source={require("./assets/images/background.png")}
+          resizeMode="cover"
+          style={styles.rootScreen}
+          imageStyle={styles.backgroundImage}
+        >
+          <SafeAreaView style={styles.rootScreen}>
+            {screensHandler()}
+          </SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </React.Fragment>
   );
 }
 
