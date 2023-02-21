@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, FlatList, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  FlatList,
+  useWindowDimensions,
+} from "react-native";
 import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/UI/PrimatyButton";
 import Title from "../components/UI/Title";
@@ -25,6 +31,7 @@ const GameScreen = ({ userNumber, onGameOver }) => {
   const initialGuess = generateRandomNumber(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
   const [guessRounds, setGuessRounds] = useState([initialGuess]);
+  const { width } = useWindowDimensions();
 
   //check if game is over every time user changes guessed value
   useEffect(() => {
@@ -65,9 +72,8 @@ const GameScreen = ({ userNumber, onGameOver }) => {
     setGuessRounds((prevState) => [newRndNumber, ...prevState]);
   };
 
-  return (
-    <View style={styles.screen}>
-      <Title> Opponent's Guess </Title>
+  let content = (
+    <React.Fragment>
       <NumberContainer>{currentGuess}</NumberContainer>
       <Card>
         <IntructionText text="Higher or lower?" />
@@ -84,11 +90,42 @@ const GameScreen = ({ userNumber, onGameOver }) => {
           </View>
         </View>
       </Card>
-      <View style = {styles.flatListContainer}>
+    </React.Fragment>
+  );
+
+  if (width > 500) {
+    content = (
+      <React.Fragment>
+        <IntructionText text="Higher or lower?" />
+        <View style={styles.buttonsContainerWide}>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={() => nextGuessHandler("lower")}>
+              <Ionicons name="md-remove" size={24} />
+            </PrimaryButton>
+          </View>
+          <NumberContainer>{currentGuess}</NumberContainer>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={() => nextGuessHandler("greater")}>
+              <Ionicons name="md-add" size={24} />
+            </PrimaryButton>
+          </View>
+        </View>
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+      <Title> Opponent's Guess </Title>
+      {content}
+      <View style={styles.flatListContainer}>
         <FlatList
           data={guessRounds}
           renderItem={(itemData) => (
-            <LogItem round={guessRounds.length - itemData.index} guess={itemData.item}/>
+            <LogItem
+              round={guessRounds.length - itemData.index}
+              guess={itemData.item}
+            />
           )}
           keyExtractor={(item) => item}
         />
@@ -104,6 +141,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     paddingVertical: 35,
+    alignItems: "center",
+  },
+  buttonsContainerWide: {
+    flexDirection: 'row',
     alignItems: 'center'
   },
   buttonsContainer: {
@@ -114,6 +155,6 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flex: 1,
-    padding: 16
-  }
+    padding: 10,
+  },
 });

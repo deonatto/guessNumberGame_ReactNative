@@ -4,7 +4,7 @@ import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
 import Colors from "./constants/color";
 import { useState } from "react";
-import GameOverScren from "./screens/GameOverScren";
+import GameOverScren from "./screens/GameOverScreen";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState();
